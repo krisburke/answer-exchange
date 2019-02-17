@@ -4,8 +4,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
 import * as dotenv from 'dotenv';
-
 import { AppModule } from './app/app.module';
+import { TransformInterceptor } from './common/interceptor';
 
 dotenv.config();
 
@@ -35,6 +35,8 @@ async function bootstrap() {
             transform: true,
         }),
     );
+
+    app.useGlobalInterceptors(new TransformInterceptor());
 
     await app.listen(PORT);
 }
