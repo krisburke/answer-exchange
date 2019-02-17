@@ -4,16 +4,15 @@ import {
     Generated,
     Entity,
     CreateDateColumn,
-    PrimaryGeneratedColumn,
     UpdateDateColumn,
+    PrimaryGeneratedColumn,
     ManyToOne,
-    OneToMany,
 } from 'typeorm';
 import { User } from '../user/user.entity';
-import { Comment } from '../comment/comment.entity';
+import { Question } from '../question/question.entity';
 
 @Entity()
-export class Question {
+export class Comment {
     @Exclude()
     @PrimaryGeneratedColumn()
     id: number;
@@ -21,9 +20,6 @@ export class Question {
     @Column()
     @Generated('uuid')
     uuid: string;
-
-    @Column()
-    title: string;
 
     @Column()
     text: string;
@@ -34,13 +30,13 @@ export class Question {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(type => User, user => user.questions)
+    @ManyToOne(type => User, user => user.comments)
     author: User;
 
-    @OneToMany(type => Comment, comment => comment.question, { eager: true })
-    comments: Comment[];
+    @ManyToOne(type => Question, question => question.comments)
+    question: Question;
 
-    constructor(partial: Partial<Question>) {
+    constructor(partial: Partial<Comment>) {
         Object.assign(this, partial);
     }
 }

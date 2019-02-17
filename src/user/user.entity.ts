@@ -9,6 +9,7 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 import { Question } from '../question/question.entity';
+import { Comment } from '../comment/comment.entity';
 
 @Entity()
 export class User {
@@ -38,8 +39,11 @@ export class User {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToMany(type => Question, question => question.author, { eager: true })
+    @OneToMany(type => Question, question => question.author)
     questions: Question[];
+
+    @OneToMany(type => Comment, comment => comment.author)
+    comments: Comment[];
 
     constructor(partial: Partial<User>) {
         Object.assign(this, partial);
