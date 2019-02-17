@@ -4,14 +4,14 @@ import {
     Generated,
     Entity,
     CreateDateColumn,
-    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
+    ManyToOne,
 } from 'typeorm';
-import { Question } from '../question/question.entity';
+import { User } from '../user/user.entity';
 
 @Entity()
-export class User {
+export class Question {
     @Exclude()
     @PrimaryGeneratedColumn()
     id: number;
@@ -21,16 +21,10 @@ export class User {
     uuid: string;
 
     @Column()
-    username: string;
-
-    @Column({ nullable: true })
-    displayName: string;
+    title: string;
 
     @Column()
-    email: string;
-
-    @Column({ nullable: true }) // fixme tmp
-    passwordHash: string;
+    text: string;
 
     @CreateDateColumn()
     createdAt: Date;
@@ -38,10 +32,10 @@ export class User {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToMany(type => Question, question => question.author, { eager: true })
-    questions: Question[];
+    @ManyToOne(type => User, user => user.questions)
+    author: User;
 
-    constructor(partial: Partial<User>) {
+    constructor(partial: Partial<Question>) {
         Object.assign(this, partial);
     }
 }
