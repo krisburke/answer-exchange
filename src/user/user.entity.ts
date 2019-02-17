@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Question } from '../question/question.entity';
 import { Comment } from '../comment/comment.entity';
+import { Answer } from '../answer/answer.entity';
 
 @Entity()
 export class User {
@@ -41,6 +42,9 @@ export class User {
 
     @OneToMany(type => Question, question => question.author)
     questions: Question[];
+
+    @OneToMany(type => Answer, answer => answer.author)
+    answers: Answer[];
 
     @OneToMany(type => Comment, comment => comment.author)
     comments: Comment[];

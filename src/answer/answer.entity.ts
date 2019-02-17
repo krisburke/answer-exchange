@@ -11,10 +11,10 @@ import {
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Comment } from '../comment/comment.entity';
-import { Answer } from '../answer/answer.entity';
+import { Question } from '../question/question.entity';
 
 @Entity()
-export class Question {
+export class Answer {
     @Exclude()
     @PrimaryGeneratedColumn()
     id: number;
@@ -22,9 +22,6 @@ export class Question {
     @Column()
     @Generated('uuid')
     uuid: string;
-
-    @Column()
-    title: string;
 
     @Column()
     text: string;
@@ -35,16 +32,16 @@ export class Question {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(type => User, user => user.questions)
+    @ManyToOne(type => User, user => user.answers)
     author: User;
 
-    @OneToMany(type => Comment, comment => comment.question, { eager: true })
+    @OneToMany(type => Comment, comment => comment.answer, { eager: true })
     comments: Comment[];
 
-    @OneToMany(type => Answer, answer => answer.question)
-    answers: Answer[];
+    @ManyToOne(type => Question, question => question.answers)
+    question: Question;
 
-    constructor(partial: Partial<Question>) {
+    constructor(partial: Partial<Answer>) {
         Object.assign(this, partial);
     }
 }

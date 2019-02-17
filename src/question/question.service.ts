@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Question } from './question.entity';
 import { Repository } from 'typeorm';
+import { Question } from './question.entity';
 import { CreateQuestionDto, UpdateQuestionDto } from './dto';
 import { UserService } from '../user/user.service';
 
@@ -15,7 +15,10 @@ export class QuestionService {
     ) {}
 
     async findOne(uuid: string): Promise<Question> {
-        const question = await this.questionRepository.findOne({ uuid });
+        const question = await this.questionRepository.findOne({
+            where: { uuid },
+            relations: ['answers'],
+        });
 
         if (!question) {
             throw new NotFoundException(

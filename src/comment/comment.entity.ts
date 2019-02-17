@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import { Question } from '../question/question.entity';
+import { Answer } from '../answer/answer.entity';
 
 @Entity()
 export class Comment {
@@ -35,6 +36,9 @@ export class Comment {
 
     @ManyToOne(type => Question, question => question.comments)
     question: Question;
+
+    @ManyToOne(type => Answer, answer => answer.comments)
+    answer: Answer;
 
     constructor(partial: Partial<Comment>) {
         Object.assign(this, partial);
