@@ -28,7 +28,7 @@ export class QuestionController {
     @ApiOperation({ title: 'Get Question' })
     @ApiResponse({ status: 200, description: 'Returns a question.' })
     @Get(':uuid')
-    async findOne(@Param('uuid') uuid: string) {
+    async findOne(@Param('uuid') uuid: string): Promise<Question> {
         return this.questionService.findOne(uuid);
     }
 
@@ -38,7 +38,7 @@ export class QuestionController {
         description: 'The question has been created.',
     })
     @Post()
-    async create(@Body() questionData: CreateQuestionDto) {
+    async create(@Body() questionData: CreateQuestionDto): Promise<Question> {
         return this.questionService.create(questionData);
     }
 
@@ -51,7 +51,7 @@ export class QuestionController {
     async update(
         @Param('uuid') uuid: string,
         @Body() questionData: UpdateQuestionDto,
-    ) {
+    ): Promise<Question> {
         return this.questionService.update(uuid, questionData);
     }
 
@@ -62,7 +62,7 @@ export class QuestionController {
     })
     @Delete(':uuid')
     @HttpCode(204)
-    async delete(@Param('uuid') uuid: string) {
+    async delete(@Param('uuid') uuid: string): Promise<void> {
         return this.questionService.delete(uuid);
     }
 }

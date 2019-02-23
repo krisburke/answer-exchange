@@ -27,11 +27,9 @@ export class UserService {
         return this.userRepository.find();
     }
 
+    // TODO: remove create & add sign-up to auth service
     async create(userData: CreateUserDto): Promise<User> {
         const { username, email, password } = userData;
-
-        // todo handle password / auth
-        // todo handle unique username
 
         return this.userRepository.save(
             new User({

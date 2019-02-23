@@ -41,6 +41,8 @@ export class Answer {
     @ManyToOne(type => Question, question => question.answers)
     question: Question;
 
+    // todo add votes
+
     constructor(partial: Partial<Answer>) {
         Object.assign(this, partial);
     }

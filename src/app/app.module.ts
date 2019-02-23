@@ -4,6 +4,7 @@ import { UserModule } from '../user/user.module';
 import { QuestionModule } from '../question/question.module';
 import { CommentModule } from '../comment/comment.module';
 import { AnswerModule } from '../answer/answer.module';
+import { TagModule } from '../tag/tag.module';
 
 @Module({
     imports: [
@@ -12,6 +13,7 @@ import { AnswerModule } from '../answer/answer.module';
         QuestionModule,
         CommentModule,
         AnswerModule,
+        TagModule,
     ],
     controllers: [],
     providers: [],
