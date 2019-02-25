@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Question } from './question.entity';
 import { CreateQuestionDto, UpdateQuestionDto } from './dto';
 import { UserService } from '../user/user.service';
+import { IncludeOpts, QueryParams } from '../common/types';
 
 @Injectable()
 export class QuestionService {
@@ -14,11 +15,20 @@ export class QuestionService {
         private readonly userService: UserService,
     ) {}
 
-    async findOne(uuid: string): Promise<Question> {
-        const question = await this.questionRepository.findOne({
+    async findOne(uuid: string, { include }: QueryParams): Promise<Question> {
+        const options = {
             where: { uuid },
-            relations: ['answers'],
-        });
+            relations: [],
+        };
+
+        if (include === IncludeOpts.Answers) {
+            options.relations.push(IncludeOpts.Answers);
+        }
+        if (include === IncludeOpts.Comments) {
+            options.relations.push(IncludeOpts.Comments);
+        }
+
+        const question = await this.questionRepository.findOne(options);
 
         if (!question) {
             throw new NotFoundException(
@@ -29,8 +39,19 @@ export class QuestionService {
         return question;
     }
 
-    async findAll(): Promise<Question[]> {
-        return this.questionRepository.find();
+    async findAll({ include }: QueryParams): Promise<Question[]> {
+        const options = {
+            relations: [],
+        };
+
+        if (include === IncludeOpts.Answers) {
+            options.relations.push(IncludeOpts.Answers);
+        }
+        if (include === IncludeOpts.Comments) {
+            options.relations.push(IncludeOpts.Comments);
+        }
+
+        return this.questionRepository.find(options);
     }
 
     async create(questionData: CreateQuestionDto): Promise<Question> {
@@ -49,7 +70,7 @@ export class QuestionService {
         uuid: string,
         questionData: UpdateQuestionDto,
     ): Promise<Question> {
-        const questionToUpdate = await this.findOne(uuid);
+        const questionToUpdate = await this.findOne(uuid, {});
         Object.assign(questionToUpdate, questionData);
         return this.questionRepository.save(questionToUpdate);
     }

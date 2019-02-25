@@ -31,7 +31,7 @@ export class AnswerService {
     }
 
     async findAll(questionUuid: string, { include }: QueryParams) {
-        const question = await this.questionService.findOne(questionUuid);
+        const question = await this.questionService.findOne(questionUuid, {});
 
         const options = {
             where: { question },
@@ -49,7 +49,7 @@ export class AnswerService {
         const { text, authorUserUuid, questionUuid } = answerData;
 
         const author = await this.userService.findOne(authorUserUuid);
-        const question = await this.questionService.findOne(questionUuid);
+        const question = await this.questionService.findOne(questionUuid, {});
         const answer = new Answer({ text, author, question });
 
         return this.answerRepository.save(answer);

@@ -11,9 +11,4 @@ export class CreateCommentDto {
     @IsString()
     @IsNotEmpty()
     readonly authorUserUuid: string;
-
-    @ApiModelProperty()
-    @IsString()
-    @IsNotEmpty()
-    readonly questionUuid: string;
 }

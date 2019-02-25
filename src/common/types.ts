@@ -1,5 +1,5 @@
 export interface QueryParams {
-    include: IncludeOpts;
+    include?: IncludeOpts;
 }
 
 export enum IncludeOpts {

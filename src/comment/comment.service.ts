@@ -53,7 +53,7 @@ export class CommentService {
         const { text, authorUserUuid } = commentData;
 
         const author = await this.userService.findOne(authorUserUuid);
-        const question = await this.questionService.findOne(questionUuid);
+        const question = await this.questionService.findOne(questionUuid, {});
         const comment = new Comment({ text, author, question });
 
         return this.commentRepository.save(comment);
