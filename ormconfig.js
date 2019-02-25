@@ -11,12 +11,20 @@ const prodConfig = {
   synchronize: false,
   logging: false,
   entities: [`${__dirname}/dist/**/*.entity{.ts,.js}`],
+    migrations: [`${__dirname}/dist/migrations/*{.ts,.js}`,],
+    cli: {
+        migrationsDir: 'dist/migrations'
+    }
 };
 
 const devConfig = {
-    synchronize: true,
+    synchronize: false,
     logging: true,
     entities: [`${__dirname}/src/**/*.entity.ts`],
+    migrations: [`${__dirname}/migrations/*{.ts,.js}`,],
+    cli: {
+        migrationsDir: 'migrations'
+    }
 };
 
 const envConfig =
