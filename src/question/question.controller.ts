@@ -13,8 +13,8 @@ import { QuestionService } from './question.service';
 import { Question } from './question.entity';
 import { CreateQuestionDto, UpdateQuestionDto } from './dto';
 
-@ApiUseTags('question')
-@Controller('question')
+@ApiUseTags('questions')
+@Controller('questions')
 export class QuestionController {
     constructor(private readonly questionService: QuestionService) {}
 

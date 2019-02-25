@@ -2,17 +2,18 @@ import { Controller, Get, Query, Param } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { TagService } from './tag.service';
 import { Tag } from './tag.entity';
+import { IncludeOpts } from '../common/types';
 
-@ApiUseTags('tag')
-@Controller('tag')
+@ApiUseTags('tags')
+@Controller('tags')
 export class TagController {
     constructor(private readonly tagService: TagService) {}
 
     @ApiOperation({ title: 'Get Tags' })
     @ApiResponse({ status: 200, description: 'Returns all tags.' })
     @Get()
-    async findAll(@Query('query') query: { include: string }): Promise<Tag[]> {
-        return this.tagService.findAll(query);
+    async findAll(@Query('include') include: IncludeOpts): Promise<Tag[]> {
+        return this.tagService.findAll({ include });
     }
 
     @ApiOperation({ title: 'Get Tag' })
@@ -20,8 +21,8 @@ export class TagController {
     @Get(':uuid')
     async findOne(
         @Param('uuid') uuid: string,
-        @Query('query') query: { include: string },
+        @Query('include') include: IncludeOpts,
     ): Promise<Tag> {
-        return this.tagService.findOne(uuid, query);
+        return this.tagService.findOne(uuid, { include });
     }
 }

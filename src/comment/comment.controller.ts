@@ -12,34 +12,84 @@ import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { CommentService } from './comment.service';
 import { CreateCommentDto, UpdateCommentDto } from './dto';
 
-@ApiUseTags('comment')
-@Controller('comment')
+@ApiUseTags('questions/questionUuid')
+@Controller('questions/questionUuid')
 export class CommentController {
     constructor(private readonly commentService: CommentService) {}
 
-    @ApiOperation({ title: 'Get Comment' })
-    @ApiResponse({ status: 200, description: 'Returns a comment.' })
-    @Get(':uuid')
-    async findOne(@Param('uuid') uuid: string) {
-        return this.commentService.findOne(uuid);
-    }
-
-    @ApiOperation({ title: 'Create Comment' })
+    @ApiOperation({ title: 'Create Question Comment' })
     @ApiResponse({
         status: 201,
         description: 'The comment has been created.',
     })
-    @Post()
-    async create(@Body() commentData: CreateCommentDto) {
-        return this.commentService.create(commentData);
+    @Post('comments')
+    async createQuestionComment(
+        @Param('questionUuid') questionUuid: string,
+        @Body() commentData: CreateCommentDto,
+    ) {
+        return this.commentService.createQuestionComment(
+            questionUuid,
+            commentData,
+        );
     }
 
-    @ApiOperation({ title: 'Update Comment' })
+    @ApiOperation({ title: 'Get Question Comment' })
+    @ApiResponse({ status: 200, description: 'Returns a comment.' })
+    @Get('comments/:uuid')
+    async findOneQuestionComment(@Param('uuid') uuid: string) {
+        return this.commentService.findOne(uuid);
+    }
+
+    @ApiOperation({ title: 'Update Question Comment' })
     @ApiResponse({
         status: 200,
         description: 'The comment has been updated.',
     })
-    @Put(':uuid')
+    @Put('comments/:uuid')
+    async updateQuestionComment(
+        @Param('uuid') uuid: string,
+        @Body() commentData: UpdateCommentDto,
+    ) {
+        return this.commentService.update(uuid, commentData);
+    }
+
+    @ApiOperation({ title: 'Delete Question Comment' })
+    @ApiResponse({
+        status: 204,
+        description: 'The comment has been deleted.',
+    })
+    @Delete('comments/:uuid')
+    @HttpCode(204)
+    async deleteQuestionComment(@Param('uuid') uuid: string) {
+        return this.commentService.delete(uuid);
+    }
+
+    @ApiOperation({ title: 'Create Answer Comment' })
+    @ApiResponse({
+        status: 201,
+        description: 'The comment has been created.',
+    })
+    @Post('answers/:answerUuid/comments')
+    async createAnswerComment(
+        @Param(':answerUuid') answerUuid: string,
+        @Body() commentData: CreateCommentDto,
+    ) {
+        return this.commentService.createAnswerComment(answerUuid, commentData);
+    }
+
+    @ApiOperation({ title: 'Get Answer Comment' })
+    @ApiResponse({ status: 200, description: 'Returns a comment.' })
+    @Get('answers/:answerUuid/comments/:uuid')
+    async findOneAnswerComment(@Param('uuid') uuid: string) {
+        return this.commentService.findOne(uuid);
+    }
+
+    @ApiOperation({ title: 'Update Answer Comment' })
+    @ApiResponse({
+        status: 200,
+        description: 'The comment has been updated.',
+    })
+    @Put('answers/:answerUuid/comments/:uuid')
     async update(
         @Param('uuid') uuid: string,
         @Body() commentData: UpdateCommentDto,
@@ -47,12 +97,12 @@ export class CommentController {
         return this.commentService.update(uuid, commentData);
     }
 
-    @ApiOperation({ title: 'Delete Comment' })
+    @ApiOperation({ title: 'Delete Answer Comment' })
     @ApiResponse({
         status: 204,
         description: 'The comment has been deleted.',
     })
-    @Delete(':uuid')
+    @Delete('answers/:answerUuid/comments/:uuid')
     @HttpCode(204)
     async delete(@Param('uuid') uuid: string) {
         return this.commentService.delete(uuid);

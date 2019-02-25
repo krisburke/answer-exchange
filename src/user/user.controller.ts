@@ -13,8 +13,8 @@ import { User } from './user.entity';
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto } from './dto';
 
-@ApiUseTags('user')
-@Controller('user')
+@ApiUseTags('users')
+@Controller('users')
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
@@ -28,7 +28,7 @@ export class UserController {
     @ApiOperation({ title: 'Get User' })
     @ApiResponse({ status: 200, description: 'Returns a user.' })
     @Get(':uuid')
-    async findOne(@Param('uuid') uuid: string) {
+    async findOne(@Param('uuid') uuid: string): Promise<User> {
         return this.userService.findOne(uuid);
     }
 
@@ -38,7 +38,7 @@ export class UserController {
         description: 'The user has been created.',
     })
     @Post()
-    async create(@Body() userData: CreateUserDto) {
+    async create(@Body() userData: CreateUserDto): Promise<User> {
         return this.userService.create(userData);
     }
 
@@ -48,7 +48,10 @@ export class UserController {
         description: 'The user has been updated.',
     })
     @Put(':uuid')
-    async update(@Param('uuid') uuid: string, @Body() userData: UpdateUserDto) {
+    async update(
+        @Param('uuid') uuid: string,
+        @Body() userData: UpdateUserDto,
+    ): Promise<User> {
         return this.userService.update(uuid, userData);
     }
 
@@ -59,7 +62,7 @@ export class UserController {
     })
     @Delete(':uuid')
     @HttpCode(204)
-    async delete(@Param('uuid') uuid: string) {
+    async delete(@Param('uuid') uuid: string): Promise<void> {
         return this.userService.delete(uuid);
     }
 }

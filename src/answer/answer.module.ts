@@ -12,5 +12,6 @@ import { QuestionService } from '../question/question.service';
     imports: [TypeOrmModule.forFeature([Answer]), QuestionModule, UserModule],
     providers: [AnswerService, QuestionService, UserService],
     controllers: [AnswerController],
+    exports: [AnswerService],
 })
 export class AnswerModule {}

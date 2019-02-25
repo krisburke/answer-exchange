@@ -7,20 +7,36 @@ import {
     Param,
     Post,
     Put,
+    Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { AnswerService } from './answer.service';
 import { CreateAnswerDto, UpdateAnswerDto } from './dto';
+import { Answer } from './answer.entity';
+import { IncludeOpts, QueryParams } from '../common/types';
 
-@ApiUseTags('answer')
-@Controller('answer')
+@ApiUseTags('questions/:questionUuid/answers')
+@Controller('questions/:questionUuid/answers')
 export class AnswerController {
     constructor(private readonly answerService: AnswerService) {}
+
+    @ApiOperation({ title: 'Get Answers' })
+    @ApiResponse({
+        status: 200,
+        description: 'Returns all answers to the question',
+    })
+    @Get()
+    async findAll(
+        @Param('questionUuid') questionUuid: string,
+        @Query('include') include: IncludeOpts,
+    ): Promise<Answer[]> {
+        return this.answerService.findAll(questionUuid, { include });
+    }
 
     @ApiOperation({ title: 'Get Answer' })
     @ApiResponse({ status: 200, description: 'Returns a answer.' })
     @Get(':uuid')
-    async findOne(@Param('uuid') uuid: string) {
+    async findOne(@Param('uuid') uuid: string): Promise<Answer> {
         return this.answerService.findOne(uuid);
     }
 
@@ -30,7 +46,7 @@ export class AnswerController {
         description: 'The answer has been created.',
     })
     @Post()
-    async create(@Body() answerData: CreateAnswerDto) {
+    async create(@Body() answerData: CreateAnswerDto): Promise<Answer> {
         return this.answerService.create(answerData);
     }
 
@@ -43,7 +59,7 @@ export class AnswerController {
     async update(
         @Param('uuid') uuid: string,
         @Body() answerData: UpdateAnswerDto,
-    ) {
+    ): Promise<Answer> {
         return this.answerService.update(uuid, answerData);
     }
 

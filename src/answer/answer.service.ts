@@ -1,10 +1,11 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Answer } from './answer.entity';
 import { CreateAnswerDto, UpdateAnswerDto } from './dto';
 import { UserService } from '../user/user.service';
 import { QuestionService } from '../question/question.service';
+import { IncludeOpts, QueryParams } from '../common/types';
 
 @Injectable()
 export class AnswerService {
@@ -27,6 +28,21 @@ export class AnswerService {
         }
 
         return answer;
+    }
+
+    async findAll(questionUuid: string, { include }: QueryParams) {
+        const question = await this.questionService.findOne(questionUuid);
+
+        const options = {
+            where: { question },
+            relations: [],
+        };
+
+        if (include === IncludeOpts.Comments) {
+            options.relations.push(IncludeOpts.Comments);
+        }
+
+        return this.answerRepository.find();
     }
 
     async create(answerData: CreateAnswerDto): Promise<Answer> {
