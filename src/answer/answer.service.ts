@@ -42,7 +42,7 @@ export class AnswerService {
             options.relations.push(IncludeOpts.Comments);
         }
 
-        return this.answerRepository.find();
+        return this.answerRepository.find(options);
     }
 
     async create(answerData: CreateAnswerDto): Promise<Answer> {
