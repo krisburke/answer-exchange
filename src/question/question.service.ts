@@ -27,6 +27,9 @@ export class QuestionService {
         if (include === IncludeOpts.Comments) {
             options.relations.push(IncludeOpts.Comments);
         }
+        if (include === IncludeOpts.Author) {
+            options.relations.push(IncludeOpts.Author);
+        }
 
         const question = await this.questionRepository.findOne(options);
 

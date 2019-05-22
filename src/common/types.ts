@@ -3,6 +3,7 @@ export interface QueryParams {
 }
 
 export enum IncludeOpts {
+    Author = 'author',
     Questions = 'questions',
     Comments = 'comments',
     Answers = 'answers',
