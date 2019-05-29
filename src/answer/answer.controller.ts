@@ -13,7 +13,6 @@ import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { AnswerService } from './answer.service';
 import { CreateAnswerDto, UpdateAnswerDto } from './dto';
 import { Answer } from './answer.entity';
-import { IncludeOpts, QueryParams } from '../common/types';
 
 @ApiUseTags('questions/:questionUuid/answers')
 @Controller('questions/:questionUuid/answers')
@@ -28,16 +27,19 @@ export class AnswerController {
     @Get()
     async findAll(
         @Param('questionUuid') questionUuid: string,
-        @Query('include') include: IncludeOpts,
+        @Query('expand') expand?: string,
     ): Promise<Answer[]> {
-        return this.answerService.findAll(questionUuid, { include });
+        return this.answerService.findAll(questionUuid, { expand });
     }
 
     @ApiOperation({ title: 'Get Answer' })
     @ApiResponse({ status: 200, description: 'Returns a answer.' })
     @Get(':uuid')
-    async findOne(@Param('uuid') uuid: string): Promise<Answer> {
-        return this.answerService.findOne(uuid);
+    async findOne(
+        @Param('uuid') uuid: string,
+        @Query('expand') expand?: string,
+    ): Promise<Answer> {
+        return this.answerService.findOne(uuid, { expand });
     }
 
     @ApiOperation({ title: 'Create Answer' })

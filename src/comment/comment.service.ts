@@ -52,8 +52,12 @@ export class CommentService {
     ): Promise<Comment> {
         const { text, authorUserUuid } = commentData;
 
-        const author = await this.userService.findOne(authorUserUuid);
-        const question = await this.questionService.findOne(questionUuid, {});
+        const author = await this.userService.findOne(authorUserUuid, {
+            expand: 'none',
+        });
+        const question = await this.questionService.findOne(questionUuid, {
+            expand: 'none',
+        });
         const comment = new Comment({ text, author, question });
 
         return this.commentRepository.save(comment);
@@ -65,8 +69,12 @@ export class CommentService {
     ): Promise<Comment> {
         const { text, authorUserUuid } = commentData;
 
-        const author = await this.userService.findOne(authorUserUuid);
-        const answer = await this.answerService.findOne(answerUuid);
+        const author = await this.userService.findOne(authorUserUuid, {
+            expand: 'none',
+        });
+        const answer = await this.answerService.findOne(answerUuid, {
+            expand: 'none',
+        });
         const comment = new Comment({ text, author, answer });
 
         return this.commentRepository.save(comment);

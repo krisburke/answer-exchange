@@ -1,8 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto, UpdateUserDto } from './dto';
+import { buildJoinOpts } from '../common/helpers';
+import { BaseField, QueryParams } from '../common/types';
 
 @Injectable()
 export class UserService {
@@ -11,8 +13,13 @@ export class UserService {
         private readonly userRepository: Repository<User>,
     ) {}
 
-    async findOne(uuid: string): Promise<User> {
-        const user = await this.userRepository.findOne({ uuid });
+    async findOne(uuid: string, { expand }: QueryParams): Promise<User> {
+        const findOptions: FindOneOptions = {
+            where: { uuid },
+            ...buildJoinOpts(BaseField.User, expand),
+        };
+
+        const user = await this.userRepository.findOne(findOptions);
 
         if (!user) {
             throw new NotFoundException(
@@ -23,8 +30,12 @@ export class UserService {
         return user;
     }
 
-    async findAll(): Promise<User[]> {
-        return this.userRepository.find();
+    async findAll({ expand }: QueryParams): Promise<User[]> {
+        const findOptions: FindManyOptions = {
+            ...buildJoinOpts(BaseField.User, expand),
+        };
+
+        return this.userRepository.find(findOptions);
     }
 
     // TODO: remove create & add sign-up to auth service
@@ -40,7 +51,7 @@ export class UserService {
     }
 
     async update(uuid: string, userData: UpdateUserDto): Promise<User> {
-        const userToUpdate = await this.findOne(uuid);
+        const userToUpdate = await this.findOne(uuid, { expand: 'none' });
         Object.assign(userToUpdate, userData);
         return this.userRepository.save(userToUpdate);
     }

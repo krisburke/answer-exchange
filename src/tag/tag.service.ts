@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { Tag } from './tag.entity';
-import { QueryParams, IncludeOpts } from '../common/types';
+import { BaseField, QueryParams } from '../common/types';
+import { buildJoinOpts } from '../common/helpers';
 
 @Injectable()
 export class TagService {
@@ -11,27 +12,19 @@ export class TagService {
         private readonly tagRepository: Repository<Tag>,
     ) {}
 
-    async findAll({ include }: QueryParams): Promise<Tag[]> {
-        const options = {
-            relations: [],
+    async findAll({ expand }: QueryParams): Promise<Tag[]> {
+        const options: FindManyOptions = {
+            ...buildJoinOpts(BaseField.Tag, expand),
         };
-
-        if (include === IncludeOpts.Questions) {
-            options.relations.push(IncludeOpts.Questions);
-        }
 
         return this.tagRepository.find(options);
     }
 
-    async findOne(uuid: string, { include }: QueryParams): Promise<Tag> {
-        const options = {
+    async findOne(uuid: string, { expand }: QueryParams): Promise<Tag> {
+        const options: FindOneOptions = {
             where: { uuid },
-            relations: [],
+            ...buildJoinOpts(BaseField.Tag, expand),
         };
-
-        if (include === IncludeOpts.Questions) {
-            options.relations.push(IncludeOpts.Questions);
-        }
 
         const tag = await this.tagRepository.findOne(options);
 

@@ -1,10 +1,11 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { Question } from './question.entity';
 import { CreateQuestionDto, UpdateQuestionDto } from './dto';
 import { UserService } from '../user/user.service';
-import { IncludeOpts, QueryParams } from '../common/types';
+import { BaseField, QueryParams } from '../common/types';
+import { buildJoinOpts } from '../common/helpers';
 
 @Injectable()
 export class QuestionService {
@@ -15,23 +16,13 @@ export class QuestionService {
         private readonly userService: UserService,
     ) {}
 
-    async findOne(uuid: string, { include }: QueryParams): Promise<Question> {
-        const options = {
+    async findOne(uuid: string, { expand }: QueryParams): Promise<Question> {
+        const findOptions: FindOneOptions = {
             where: { uuid },
-            relations: [],
+            ...buildJoinOpts(BaseField.Question, expand),
         };
 
-        if (include === IncludeOpts.Answers) {
-            options.relations.push(IncludeOpts.Answers);
-        }
-        if (include === IncludeOpts.Comments) {
-            options.relations.push(IncludeOpts.Comments);
-        }
-        if (include === IncludeOpts.Author) {
-            options.relations.push(IncludeOpts.Author);
-        }
-
-        const question = await this.questionRepository.findOne(options);
+        const question = await this.questionRepository.findOne(findOptions);
 
         if (!question) {
             throw new NotFoundException(
@@ -42,25 +33,20 @@ export class QuestionService {
         return question;
     }
 
-    async findAll({ include }: QueryParams): Promise<Question[]> {
-        const options = {
-            relations: [],
+    async findAll({ expand }: QueryParams): Promise<Question[]> {
+        const findOptions: FindManyOptions = {
+            ...buildJoinOpts(BaseField.Question, expand),
         };
 
-        if (include === IncludeOpts.Answers) {
-            options.relations.push(IncludeOpts.Answers);
-        }
-        if (include === IncludeOpts.Comments) {
-            options.relations.push(IncludeOpts.Comments);
-        }
-
-        return this.questionRepository.find(options);
+        return this.questionRepository.find(findOptions);
     }
 
     async create(questionData: CreateQuestionDto): Promise<Question> {
         const { text, title, authorUserUuid } = questionData;
 
-        const author = await this.userService.findOne(authorUserUuid);
+        const author = await this.userService.findOne(authorUserUuid, {
+            expand: 'none',
+        });
 
         const newQuestion = await this.questionRepository.save(
             new Question({ title, text, author }),
@@ -73,7 +59,7 @@ export class QuestionService {
         uuid: string,
         questionData: UpdateQuestionDto,
     ): Promise<Question> {
-        const questionToUpdate = await this.findOne(uuid, {});
+        const questionToUpdate = await this.findOne(uuid, { expand: 'none' });
         Object.assign(questionToUpdate, questionData);
         return this.questionRepository.save(questionToUpdate);
     }

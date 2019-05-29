@@ -1,10 +1,11 @@
 export interface QueryParams {
-    include?: IncludeOpts;
+    expand?: string;
 }
 
-export enum IncludeOpts {
-    Author = 'author',
-    Questions = 'questions',
-    Comments = 'comments',
-    Answers = 'answers',
+export enum BaseField {
+    Question = 'question',
+    Answer = 'answer',
+    Comment = 'comment',
+    Tag = 'tag',
+    User = 'user',
 }

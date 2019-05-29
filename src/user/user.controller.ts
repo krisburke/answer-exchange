@@ -7,6 +7,7 @@ import {
     Delete,
     Controller,
     HttpCode,
+    Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
 import { User } from './user.entity';
@@ -21,15 +22,18 @@ export class UserController {
     @ApiOperation({ title: 'Get Users' })
     @ApiResponse({ status: 200, description: 'Returns all users.' })
     @Get()
-    async findAll(): Promise<User[]> {
-        return this.userService.findAll();
+    async findAll(@Query('expand') expand?: string): Promise<User[]> {
+        return this.userService.findAll({ expand });
     }
 
     @ApiOperation({ title: 'Get User' })
     @ApiResponse({ status: 200, description: 'Returns a user.' })
     @Get(':uuid')
-    async findOne(@Param('uuid') uuid: string): Promise<User> {
-        return this.userService.findOne(uuid);
+    async findOne(
+        @Param('uuid') uuid: string,
+        @Query('expand') expand?: string,
+    ): Promise<User> {
+        return this.userService.findOne(uuid, { expand });
     }
 
     @ApiOperation({ title: 'Create User' })

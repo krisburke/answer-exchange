@@ -1,11 +1,12 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { Answer } from './answer.entity';
 import { CreateAnswerDto, UpdateAnswerDto } from './dto';
 import { UserService } from '../user/user.service';
 import { QuestionService } from '../question/question.service';
-import { IncludeOpts, QueryParams } from '../common/types';
+import { BaseField, QueryParams } from '../common/types';
+import { buildJoinOpts } from '../common/helpers';
 
 @Injectable()
 export class AnswerService {
@@ -18,8 +19,13 @@ export class AnswerService {
         private readonly userService: UserService,
     ) {}
 
-    async findOne(uuid: string): Promise<Answer> {
-        const answer = await this.answerRepository.findOne({ uuid });
+    async findOne(uuid: string, { expand }: QueryParams): Promise<Answer> {
+        const findOptions: FindOneOptions = {
+            where: { uuid },
+            ...buildJoinOpts(BaseField.Answer, expand),
+        };
+
+        const answer = await this.answerRepository.findOne(findOptions);
 
         if (!answer) {
             throw new NotFoundException(
@@ -30,33 +36,33 @@ export class AnswerService {
         return answer;
     }
 
-    async findAll(questionUuid: string, { include }: QueryParams) {
-        const question = await this.questionService.findOne(questionUuid, {});
+    async findAll(questionUuid: string, { expand }: QueryParams) {
+        const question = await this.questionService.findOne(questionUuid, {
+            expand: 'none',
+        });
 
-        const options = {
+        const findOptions: FindManyOptions = {
             where: { question },
-            relations: [],
+            ...buildJoinOpts(BaseField.Answer, expand),
         };
 
-        if (include === IncludeOpts.Comments) {
-            options.relations.push(IncludeOpts.Comments);
-        }
-
-        return this.answerRepository.find(options);
+        return this.answerRepository.find(findOptions);
     }
 
     async create(answerData: CreateAnswerDto): Promise<Answer> {
         const { text, authorUserUuid, questionUuid } = answerData;
 
         const author = await this.userService.findOne(authorUserUuid);
-        const question = await this.questionService.findOne(questionUuid, {});
+        const question = await this.questionService.findOne(questionUuid, {
+            expand: 'none',
+        });
         const answer = new Answer({ text, author, question });
 
         return this.answerRepository.save(answer);
     }
 
     async update(uuid: string, answerData: UpdateAnswerDto): Promise<Answer> {
-        const answerToUpdate = await this.findOne(uuid);
+        const answerToUpdate = await this.findOne(uuid, { expand: 'none' });
         Object.assign(answerToUpdate, answerData);
         return this.answerRepository.save(answerToUpdate);
     }
