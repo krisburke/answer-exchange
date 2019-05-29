@@ -52,7 +52,9 @@ export class AnswerService {
     async create(answerData: CreateAnswerDto): Promise<Answer> {
         const { text, authorUserUuid, questionUuid } = answerData;
 
-        const author = await this.userService.findOne(authorUserUuid);
+        const author = await this.userService.findOne(authorUserUuid, {
+            expand: 'none',
+        });
         const question = await this.questionService.findOne(questionUuid, {
             expand: 'none',
         });
