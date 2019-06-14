@@ -1,13 +1,13 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
 export class UpdateQuestionDto {
-    @ApiModelProperty()
+    @ApiModelPropertyOptional()
     @IsString()
     @IsOptional()
     readonly title: string;
 
-    @ApiModelProperty()
+    @ApiModelPropertyOptional()
     @IsString()
     @IsOptional()
     readonly text: string;

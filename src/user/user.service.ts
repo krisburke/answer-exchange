@@ -59,9 +59,18 @@ export class UserService {
         );
     }
 
-    async update(uuid: string, userData: UpdateUserDto): Promise<User> {
+    async update(
+        uuid: string,
+        { password, ...restUpdateUserDto }: UpdateUserDto,
+    ): Promise<User> {
         const userToUpdate = await this.findOne(uuid, { expand: 'none' });
-        Object.assign(userToUpdate, userData);
+        const passwordHash = password && (await this.hashPassword(password));
+
+        Object.assign(userToUpdate, {
+            ...restUpdateUserDto,
+            ...(passwordHash && { passwordHash }),
+        });
+
         return this.userRepository.save(userToUpdate);
     }
 
