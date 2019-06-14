@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
+import * as argon2 from 'argon2';
 import { User } from './user.entity';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { buildJoinOpts } from '../common/helpers';
@@ -30,6 +31,12 @@ export class UserService {
         return user;
     }
 
+    async findOneByEmail(email: string) {
+        return this.userRepository.findOne({
+            where: { email },
+        });
+    }
+
     async findAll({ expand }: QueryParams): Promise<User[]> {
         const findOptions: FindManyOptions = {
             ...buildJoinOpts(BaseField.User, expand),
@@ -38,14 +45,16 @@ export class UserService {
         return this.userRepository.find(findOptions);
     }
 
-    // TODO: remove create & add sign-up to auth service
     async create(userData: CreateUserDto): Promise<User> {
         const { username, email, password } = userData;
+
+        const passwordHash = await this.hashPassword(password);
 
         return this.userRepository.save(
             new User({
                 username,
                 email,
+                passwordHash,
             }),
         );
     }
@@ -59,5 +68,11 @@ export class UserService {
     async delete(uuid: string): Promise<void> {
         await this.userRepository.delete({ uuid });
         return;
+    }
+
+    private hashPassword(password: string): Promise<string> {
+        return argon2.hash(password, {
+            type: argon2.argon2i,
+        });
     }
 }

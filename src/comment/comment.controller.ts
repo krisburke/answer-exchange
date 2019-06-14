@@ -7,13 +7,22 @@ import {
     Param,
     Post,
     Put,
+    UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import {
+    ApiBearerAuth,
+    ApiOperation,
+    ApiResponse,
+    ApiUseTags,
+} from '@nestjs/swagger';
 import { CommentService } from './comment.service';
 import { CreateCommentDto, UpdateCommentDto } from './dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiUseTags('questions/questionUuid')
 @Controller('questions/questionUuid')
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth()
 export class CommentController {
     constructor(private readonly commentService: CommentService) {}
 

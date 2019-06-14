@@ -23,6 +23,7 @@ async function bootstrap() {
         .setTitle('Answer Exchange Service')
         .setVersion('0.0.1')
         .setBasePath('api')
+        .addBearerAuth('Authorization', 'header')
         .build();
 
     const swaggerDocument = SwaggerModule.createDocument(app, swaggerOptions);
