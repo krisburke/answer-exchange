@@ -31,6 +31,7 @@ export class User {
     @Column()
     email: string;
 
+    @Exclude()
     @Column({ nullable: true }) // fixme tmp
     passwordHash: string;
 
