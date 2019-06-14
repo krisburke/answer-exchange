@@ -4,11 +4,11 @@ import { QuestionService } from './question.service';
 import { QuestionController } from './question.controller';
 import { Question } from './question.entity';
 import { UserModule } from '../user/user.module';
-import { UserService } from '../user/user.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Question]), UserModule],
-    providers: [QuestionService, UserService],
+    imports: [TypeOrmModule.forFeature([Question]), UserModule, AuthModule],
+    providers: [QuestionService],
     controllers: [QuestionController],
     exports: [QuestionService],
 })

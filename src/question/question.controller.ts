@@ -8,14 +8,23 @@ import {
     Post,
     Put,
     Query,
+    UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import {
+    ApiBearerAuth,
+    ApiOperation,
+    ApiResponse,
+    ApiUseTags,
+} from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 import { QuestionService } from './question.service';
 import { Question } from './question.entity';
 import { CreateQuestionDto, UpdateQuestionDto } from './dto';
 
 @ApiUseTags('questions')
 @Controller('questions')
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth()
 export class QuestionController {
     constructor(private readonly questionService: QuestionService) {}
 

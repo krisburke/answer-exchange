@@ -2,20 +2,28 @@ import {
     Body,
     Param,
     Get,
-    Post,
     Put,
     Delete,
     Controller,
     HttpCode,
     Query,
+    UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import {
+    ApiBearerAuth,
+    ApiOperation,
+    ApiResponse,
+    ApiUseTags,
+} from '@nestjs/swagger';
 import { User } from './user.entity';
 import { UserService } from './user.service';
-import { CreateUserDto, UpdateUserDto } from './dto';
+import { UpdateUserDto } from './dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiUseTags('users')
 @Controller('users')
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth()
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
@@ -34,16 +42,6 @@ export class UserController {
         @Query('expand') expand?: string,
     ): Promise<User> {
         return this.userService.findOne(uuid, { expand });
-    }
-
-    @ApiOperation({ title: 'Create User' })
-    @ApiResponse({
-        status: 201,
-        description: 'The user has been created.',
-    })
-    @Post()
-    async create(@Body() userData: CreateUserDto): Promise<User> {
-        return this.userService.create(userData);
     }
 
     @ApiOperation({ title: 'Update User' })
