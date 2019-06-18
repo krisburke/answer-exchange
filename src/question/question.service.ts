@@ -4,8 +4,9 @@ import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { Question } from './question.entity';
 import { CreateQuestionDto, UpdateQuestionDto } from './dto';
 import { UserService } from '../user/user.service';
-import { BaseField, QueryParams } from '../common/types';
+import { BaseField, FindQuestionArgs, QueryParams } from '../common/types';
 import { buildJoinOpts } from '../common/helpers';
+import { Pagination } from '../paginate/pagination';
 
 @Injectable()
 export class QuestionService {
@@ -33,12 +34,22 @@ export class QuestionService {
         return question;
     }
 
-    async findAll({ expand }: QueryParams): Promise<Question[]> {
+    async findAll({
+        expand,
+        skip,
+        take,
+    }: FindQuestionArgs): Promise<Pagination<Question>> {
         const findOptions: FindManyOptions = {
+            take,
+            skip: skip * take,
             ...buildJoinOpts(BaseField.Question, expand),
         };
 
-        return this.questionRepository.find(findOptions);
+        const [results, total] = await this.questionRepository.findAndCount(
+            findOptions,
+        );
+
+        return new Pagination<Question>({ results, total }, { take, skip });
     }
 
     async create(questionData: CreateQuestionDto): Promise<Question> {
