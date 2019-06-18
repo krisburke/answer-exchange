@@ -20,6 +20,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { QuestionService } from './question.service';
 import { Question } from './question.entity';
 import { CreateQuestionDto, UpdateQuestionDto } from './dto';
+import { Pagination } from '../paginate/pagination';
 
 @ApiUseTags('questions')
 @Controller('questions')
@@ -31,8 +32,12 @@ export class QuestionController {
     @ApiOperation({ title: 'Get Questions' })
     @ApiResponse({ status: 200, description: 'Returns all questions.' })
     @Get()
-    async findAll(@Query('expand') expand?: string): Promise<Question[]> {
-        return this.questionService.findAll({ expand });
+    async findAll(
+        @Query('skip') skip: number,
+        @Query('take') take: number,
+        @Query('expand') expand?: string,
+    ): Promise<Pagination<Question>> {
+        return this.questionService.findAll({ expand, skip, take });
     }
 
     @ApiOperation({ title: 'Get Question' })
