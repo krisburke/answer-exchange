@@ -49,7 +49,7 @@ export class Question {
 
     @ManyToMany(type => Tag, tag => tag.questions)
     @JoinTable()
-    tags: Tag;
+    tags: Tag[];
 
     // todo add votes
 

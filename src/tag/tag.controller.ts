@@ -1,4 +1,12 @@
-import { Controller, Get, Query, Param, UseGuards } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Query,
+    Param,
+    UseGuards,
+    Body,
+    Post,
+} from '@nestjs/common';
 import {
     ApiBearerAuth,
     ApiOperation,
@@ -8,6 +16,7 @@ import {
 import { TagService } from './tag.service';
 import { Tag } from './tag.entity';
 import { AuthGuard } from '@nestjs/passport';
+import { CreateTagDto } from './dto/create-tag-dto';
 
 @ApiUseTags('tags')
 @Controller('tags')
@@ -30,6 +39,13 @@ export class TagController {
         @Param('uuid') uuid: string,
         @Query('expand') expand?: string,
     ): Promise<Tag> {
-        return this.tagService.findOne(uuid, { expand });
+        return this.tagService.findOneByUuid(uuid, { expand });
+    }
+
+    @ApiOperation({ title: 'Create Tag' })
+    @ApiResponse({ status: 200, description: 'The tag has been created.' })
+    @Post()
+    async create(@Body() createTagDto: CreateTagDto): Promise<Tag> {
+        return this.tagService.create(createTagDto);
     }
 }

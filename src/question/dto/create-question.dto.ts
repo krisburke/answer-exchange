@@ -1,5 +1,6 @@
-import { ApiModelProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty } from 'class-validator';
+import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, IsOptional, IsArray } from 'class-validator';
+import { IsKebabCase } from '../../common/decorators/IsKebabCase';
 
 export class CreateQuestionDto {
     @ApiModelProperty()
@@ -16,4 +17,10 @@ export class CreateQuestionDto {
     @IsString()
     @IsNotEmpty()
     readonly authorUserUuid: string;
+
+    @ApiModelPropertyOptional()
+    @IsOptional()
+    @IsArray()
+    // @IsKebabCase() FIXME handle array of tags
+    readonly tagSlugs?: string[];
 }
