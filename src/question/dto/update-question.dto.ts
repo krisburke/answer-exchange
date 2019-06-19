@@ -1,5 +1,6 @@
 import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsKebabCase } from '../../common/decorators/IsKebabCase';
 
 export class UpdateQuestionDto {
     @ApiModelPropertyOptional()
@@ -11,4 +12,10 @@ export class UpdateQuestionDto {
     @IsString()
     @IsOptional()
     readonly text: string;
+
+    @ApiModelPropertyOptional()
+    @IsOptional()
+    @IsArray()
+    // @IsKebabCase() FIXME handle an array of tags
+    readonly tagSlugs?: string[];
 }

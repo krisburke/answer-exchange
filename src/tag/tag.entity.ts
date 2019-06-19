@@ -4,7 +4,6 @@ import {
     PrimaryGeneratedColumn,
     Entity,
     CreateDateColumn,
-    UpdateDateColumn,
     ManyToMany,
     Generated,
 } from 'typeorm';
@@ -16,6 +15,7 @@ export class Tag {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column()
     @Generated('uuid')
     uuid: string;
 

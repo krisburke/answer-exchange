@@ -15,6 +15,7 @@
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run",
     "migration:revert": "ts-node ./node_modules/typeorm/cli.js migration:revert",
+    "migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate -n LatestMigration",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
