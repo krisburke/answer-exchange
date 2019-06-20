@@ -16,6 +16,7 @@ export function buildJoinOpts(
         comment: 'author,question,answer',
         tag: 'questions',
         user: 'questions,answers,comments',
+        vote: 'none',
     };
     const expandString =
         expandQueryString || defaultExpandString[baseFieldAlias];

@@ -9,12 +9,15 @@ import { asyncForEach, buildJoinOpts } from '../common/helpers';
 import { Pagination } from '../paginate/pagination';
 import { Tag } from '../tag/tag.entity';
 import { TagService } from '../tag/tag.service';
+import { VoteRepository } from '../vote/vote.repository';
 
 @Injectable()
 export class QuestionService {
     constructor(
         @InjectRepository(Question)
         private readonly questionRepository: Repository<Question>,
+        @InjectRepository(VoteRepository)
+        private readonly voteRepository: VoteRepository,
         @Inject(UserService)
         private readonly userService: UserService,
         @Inject(TagService)
@@ -35,7 +38,7 @@ export class QuestionService {
             );
         }
 
-        return question;
+        return this.addVoteCountToQuestion(question);
     }
 
     async findAll({
@@ -53,7 +56,16 @@ export class QuestionService {
             findOptions,
         );
 
-        return new Pagination<Question>({ results, total }, { take, skip });
+        const questionsWithVoteCount = await Promise.all(
+            results.map(async question =>
+                this.addVoteCountToQuestion(question),
+            ),
+        );
+
+        return new Pagination<Question>(
+            { results: questionsWithVoteCount, total },
+            { take, skip },
+        );
     }
 
     async create(questionData: CreateQuestionDto): Promise<Question> {
@@ -96,6 +108,19 @@ export class QuestionService {
     async delete(uuid: string): Promise<void> {
         await this.questionRepository.delete({ uuid });
         return;
+    }
+
+    private async addVoteCountToQuestion(
+        question: Question,
+    ): Promise<Question> {
+        const voteCount = await this.voteRepository.getQuestionVoteCount(
+            question.uuid,
+        );
+
+        return {
+            ...question,
+            voteCount,
+        };
     }
 
     private async handleFindOrCreateTags(tagSlugs: string[]): Promise<Tag[]> {

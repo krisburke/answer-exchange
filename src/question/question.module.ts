@@ -6,10 +6,11 @@ import { Question } from './question.entity';
 import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { TagModule } from '../tag/tag.module';
+import { VoteRepository } from '../vote/vote.repository';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Question]),
+        TypeOrmModule.forFeature([Question, VoteRepository]),
         UserModule,
         AuthModule,
         TagModule,

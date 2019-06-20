@@ -12,6 +12,7 @@ import {
 import { User } from '../user/user.entity';
 import { Comment } from '../comment/comment.entity';
 import { Question } from '../question/question.entity';
+import { Vote } from '../vote/vote.entity';
 
 @Entity()
 export class Answer {
@@ -41,7 +42,10 @@ export class Answer {
     @ManyToOne(type => Question, question => question.answers)
     question: Question;
 
-    // todo add votes
+    @OneToMany(type => Vote, vote => vote.answer)
+    votes: Vote[];
+
+    voteCount?: number;
 
     constructor(partial: Partial<Answer>) {
         Object.assign(this, partial);

@@ -7,9 +7,14 @@ import { UserModule } from '../user/user.module';
 import { UserService } from '../user/user.service';
 import { QuestionModule } from '../question/question.module';
 import { QuestionService } from '../question/question.service';
+import { VoteRepository } from '../vote/vote.repository';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Answer]), QuestionModule, UserModule],
+    imports: [
+        TypeOrmModule.forFeature([Answer, VoteRepository]),
+        QuestionModule,
+        UserModule,
+    ],
     providers: [AnswerService, QuestionService, UserService],
     controllers: [AnswerController],
     exports: [AnswerService],

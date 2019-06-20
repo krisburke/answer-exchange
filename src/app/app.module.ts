@@ -6,6 +6,7 @@ import { CommentModule } from '../comment/comment.module';
 import { AnswerModule } from '../answer/answer.module';
 import { TagModule } from '../tag/tag.module';
 import { AuthModule } from '../auth/auth.module';
+import { VoteModule } from '../vote/vote.module';
 
 @Module({
     imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from '../auth/auth.module';
         AnswerModule,
         TagModule,
         AuthModule,
+        VoteModule,
     ],
     controllers: [],
     providers: [],
