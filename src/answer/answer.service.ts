@@ -7,12 +7,15 @@ import { UserService } from '../user/user.service';
 import { QuestionService } from '../question/question.service';
 import { BaseField, QueryParams } from '../common/types';
 import { buildJoinOpts } from '../common/helpers';
+import { VoteRepository } from '../vote/vote.repository';
 
 @Injectable()
 export class AnswerService {
     constructor(
         @InjectRepository(Answer)
         private readonly answerRepository: Repository<Answer>,
+        @InjectRepository(VoteRepository)
+        private readonly voteRepository: VoteRepository,
         @Inject(QuestionService)
         private readonly questionService: QuestionService,
         @Inject(UserService)
@@ -33,7 +36,7 @@ export class AnswerService {
             );
         }
 
-        return answer;
+        return this.addVoteCountToAnswer(answer);
     }
 
     async findAll(questionUuid: string, { expand }: QueryParams) {
@@ -46,7 +49,11 @@ export class AnswerService {
             ...buildJoinOpts(BaseField.Answer, expand),
         };
 
-        return this.answerRepository.find(findOptions);
+        const answers = await this.answerRepository.find(findOptions);
+
+        return Promise.all(
+            answers.map(async answer => this.addVoteCountToAnswer(answer)),
+        );
     }
 
     async create(answerData: CreateAnswerDto): Promise<Answer> {
@@ -72,5 +79,16 @@ export class AnswerService {
     async delete(uuid: string): Promise<void> {
         await this.answerRepository.delete({ uuid });
         return;
+    }
+
+    private async addVoteCountToAnswer(answer: Answer): Promise<Answer> {
+        const voteCount = await this.voteRepository.getAnswerVoteCount(
+            answer.uuid,
+        );
+
+        return {
+            ...answer,
+            voteCount,
+        };
     }
 }

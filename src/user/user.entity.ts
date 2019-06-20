@@ -11,6 +11,7 @@ import {
 import { Question } from '../question/question.entity';
 import { Comment } from '../comment/comment.entity';
 import { Answer } from '../answer/answer.entity';
+import { Vote } from '../vote/vote.entity';
 
 @Entity()
 export class User {
@@ -49,6 +50,9 @@ export class User {
 
     @OneToMany(type => Comment, comment => comment.author)
     comments: Comment[];
+
+    @OneToMany(type => Vote, vote => vote.voter)
+    votes: Vote[];
 
     constructor(partial: Partial<User>) {
         Object.assign(this, partial);

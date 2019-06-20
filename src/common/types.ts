@@ -14,4 +14,11 @@ export enum BaseField {
     Comment = 'comment',
     Tag = 'tag',
     User = 'user',
+    Vote = 'vote',
+}
+
+export enum VoteRating {
+    Upvote = 1,
+    None = 0,
+    Downvote = -1,
 }
