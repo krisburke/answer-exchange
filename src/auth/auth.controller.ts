@@ -1,8 +1,12 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiUseTags } from '@nestjs/swagger';
+import {
+    ForgotPasswordDto,
+    GetAccessTokenDto,
+    AccessTokenResponseDto,
+    ResetPasswordDto,
+} from './dto';
 import { AuthService } from './auth.service';
-import { GetAccessTokenDto } from './dto/get-access-token.dto';
-import { AccessTokenResponseDto } from './dto/access-token-response.dto';
 import { CreateUserDto } from '../user/dto';
 import { User } from '../user/user.entity';
 
@@ -28,5 +32,30 @@ export class AuthController {
     @Post('register')
     async registerUser(@Body() userData: CreateUserDto): Promise<User> {
         return this.authService.registerUser(userData);
+    }
+
+    @ApiOperation({ title: 'Forgot Password' })
+    @ApiResponse({
+        status: 200,
+        description:
+            'If the email exists, sends an email with a link to reset password.',
+    })
+    @Post('forgot-password')
+    async forgotPassword(
+        @Body() forgotPasswordDto: ForgotPasswordDto,
+    ): Promise<void> {
+        return this.authService.forgotPassword(forgotPasswordDto);
+    }
+
+    @ApiOperation({ title: 'Reset Password' })
+    @ApiResponse({
+        status: 200,
+        description: 'Resets a user password to the provided password',
+    })
+    @Post('reset-password')
+    async resetPassword(
+        @Body() resetPasswordDto: ResetPasswordDto,
+    ): Promise<User> {
+        return this.authService.resetPassword(resetPasswordDto);
     }
 }

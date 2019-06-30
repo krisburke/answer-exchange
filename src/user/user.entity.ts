@@ -33,8 +33,14 @@ export class User {
     email: string;
 
     @Exclude()
-    @Column({ nullable: true }) // fixme tmp
+    @Column({ nullable: true })
     passwordHash: string;
+
+    @Column({ nullable: true, default: null })
+    passwordResetHash: string;
+
+    @Column({ nullable: true, default: null, type: 'bigint' })
+    passwordResetExpiry: number;
 
     @CreateDateColumn()
     createdAt: Date;

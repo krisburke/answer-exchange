@@ -1,17 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
-import * as argon2 from 'argon2';
 import { User } from './user.entity';
 import { CreateUserDto, UpdateUserDto } from './dto';
 import { buildJoinOpts } from '../common/helpers';
 import { BaseField, QueryParams } from '../common/types';
+import { CryptoService } from '../auth/crypto.service';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
+        private readonly cryptoService: CryptoService,
     ) {}
 
     async findOne(uuid: string, { expand }: QueryParams): Promise<User> {
@@ -48,7 +49,7 @@ export class UserService {
     async create(userData: CreateUserDto): Promise<User> {
         const { username, email, password } = userData;
 
-        const passwordHash = await this.hashPassword(password);
+        const passwordHash = await this.cryptoService.hashString(password);
 
         return this.userRepository.save(
             new User({
@@ -64,7 +65,8 @@ export class UserService {
         { password, ...restUpdateUserDto }: UpdateUserDto,
     ): Promise<User> {
         const userToUpdate = await this.findOne(uuid, { expand: 'none' });
-        const passwordHash = password && (await this.hashPassword(password));
+        const passwordHash =
+            password && (await this.cryptoService.hashString(password));
 
         Object.assign(userToUpdate, {
             ...restUpdateUserDto,
@@ -79,9 +81,7 @@ export class UserService {
         return;
     }
 
-    private hashPassword(password: string): Promise<string> {
-        return argon2.hash(password, {
-            type: argon2.argon2i,
-        });
+    async saveUser(user): Promise<User> {
+        return this.userRepository.save(user);
     }
 }
